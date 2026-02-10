@@ -1,0 +1,8 @@
+{
+  "name": "AI Doctor India",
+  "description": "A futuristic AI-powered health assistant for Indian citizens, offering guidance in 10+ regional languages with an interactive avatar and local health resources.",
+  "requestFramePermissions": [
+    "microphone",
+    "geolocation"
+  ]
+}
