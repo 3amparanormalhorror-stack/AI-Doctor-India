@@ -37,6 +37,7 @@ const App: React.FC = () => {
   const [loadProgress, setLoadProgress] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showSubscription, setShowSubscription] = useState(false);
+  const [showPaymentQR, setShowPaymentQR] = useState(false);
   const [userName, setUserName] = useState('');
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -385,6 +386,11 @@ const App: React.FC = () => {
 
   const closeSubscription = () => {
     setShowSubscription(false);
+    setShowPaymentQR(false);
+  };
+
+  const handleSubscribeClick = () => {
+    setShowPaymentQR(true);
   };
 
   if (isLoading) {
@@ -475,57 +481,110 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-slate-950 text-white selection:bg-rose-500/30">
       
-      {/* Subscription Popup */}
+      {/* Subscription & Payment Overlay */}
       {showSubscription && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/90 backdrop-blur-xl" />
-          <div className="relative glass w-full max-w-md rounded-[3rem] p-8 md:p-12 border border-rose-500/30 shadow-[0_0_100px_rgba(239,68,68,0.2)] animate-in zoom-in duration-500 text-center space-y-8">
-            <div className="space-y-2">
-              <div className="w-16 h-16 mx-auto rounded-2xl bg-rose-600 flex items-center justify-center text-white shadow-lg animate-bounce">
-                <span className="text-3xl">🚀</span>
-              </div>
-              <h2 className="text-3xl font-black tracking-tighter text-white">Pro Neural Link</h2>
-              <p className="text-rose-400 font-bold uppercase tracking-widest text-[10px]">Upgrade your AI Experience</p>
-            </div>
-
-            <div className="bg-slate-900/50 rounded-3xl p-6 border border-white/5 space-y-4 text-left">
-              {[
-                "Unlimited consultations 24/7",
-                "Advanced Deep Thinking Core",
-                "Full Multilingual Voice Engine",
-                "Instant Emergency Geo-Response"
-              ].map((feature, i) => (
-                <div key={i} className="flex items-center gap-3 text-slate-300 font-bold">
-                  <span className="text-rose-500 font-black">✓</span>
-                  <span className="text-sm">{feature}</span>
+          
+          {showPaymentQR ? (
+            /* PhonePe Style Payment View */
+            <div className="relative w-full max-w-sm bg-black rounded-[2rem] p-8 border border-white/10 shadow-[0_0_100px_rgba(113,67,185,0.2)] animate-in zoom-in duration-300 text-center flex flex-col items-center">
+              <div className="w-full flex justify-between items-start mb-6">
+                <div className="flex items-center gap-2">
+                   <div className="w-10 h-10 bg-[#5f259f] rounded-xl flex items-center justify-center text-white font-bold text-xl">पे</div>
+                   <span className="text-white font-bold text-lg">PhonePe</span>
                 </div>
-              ))}
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center justify-center gap-2">
-                <span className="text-4xl font-black text-white">₹5</span>
-                <span className="text-slate-500 font-bold uppercase tracking-widest text-xs">/ Month</span>
+                <button onClick={() => setShowPaymentQR(false)} className="text-slate-500 hover:text-white">✕</button>
               </div>
-              <button 
-                onClick={closeSubscription}
-                className="w-full py-5 rounded-3xl btn-vibrant text-white font-black text-lg tracking-tighter !from-rose-600 !to-rose-800 hover:scale-105 transition-all shadow-2xl"
-              >
-                Subscribe Now
-              </button>
-              <button 
-                onClick={closeSubscription}
-                className="w-full py-3 text-slate-500 font-bold uppercase tracking-widest text-[10px] hover:text-white transition-colors"
-              >
-                Skip for now
-              </button>
+
+              <h3 className="text-[#a577f1] font-black text-xs uppercase tracking-[0.2em] mb-4">Accepted Here</h3>
+              <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest mb-6">Scan & Pay Using PhonePe App</p>
+
+              <div className="w-full aspect-square bg-white rounded-2xl p-4 shadow-2xl relative mb-4">
+                {/* 
+                   IMPORTANT: Replace this src with your actual QR code image path 
+                   e.g. src="/path-to-your-qr.png" 
+                */}
+                <div className="w-full h-full border-4 border-black/5 flex flex-col items-center justify-center text-black font-black">
+                  <img 
+                    src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=dipayanroy@upi&pn=DIPAYAN%20ROY&cu=INR" 
+                    alt="Payment QR"
+                    className="w-full h-full object-contain"
+                  />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-2 rounded-lg border-2 border-slate-100">
+                    <div className="w-8 h-8 bg-[#5f259f] rounded flex items-center justify-center text-white text-[10px] font-bold">पे</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-1 mb-8">
+                <h4 className="text-white font-black text-xl tracking-tight">DIPAYAN ROY</h4>
+                <div className="flex items-center justify-center gap-1.5 text-emerald-500 font-bold text-[10px] uppercase tracking-widest">
+                  <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full flex items-center justify-center text-[6px] text-black">✓</span>
+                  Verified Merchant
+                </div>
+              </div>
+
+              <div className="w-full pt-6 border-t border-white/5 space-y-4">
+                <button 
+                  onClick={closeSubscription}
+                  className="w-full py-4 rounded-2xl bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 transition-all border border-white/10"
+                >
+                  I've Paid / Complete
+                </button>
+                <p className="text-[8px] text-slate-600 font-medium">© 2026 PhonePe Ltd (Formerly PhonePe Private Ltd)</p>
+              </div>
             </div>
-            
-            <p className="text-[9px] text-slate-600 font-medium leading-tight">
-              AI Doctor India Pro provides enhanced neural processing speeds. 
-              Secure payment via Matrix-Gateway.
-            </p>
-          </div>
+          ) : (
+            /* Subscription Benefits View */
+            <div className="relative glass w-full max-w-md rounded-[3rem] p-8 md:p-12 border border-rose-500/30 shadow-[0_0_100px_rgba(239,68,68,0.2)] animate-in zoom-in duration-500 text-center space-y-8">
+              <div className="space-y-2">
+                <div className="w-16 h-16 mx-auto rounded-2xl bg-rose-600 flex items-center justify-center text-white shadow-lg animate-bounce">
+                  <span className="text-3xl">🚀</span>
+                </div>
+                <h2 className="text-3xl font-black tracking-tighter text-white">Pro Neural Link</h2>
+                <p className="text-rose-400 font-bold uppercase tracking-widest text-[10px]">Upgrade your AI Experience</p>
+              </div>
+
+              <div className="bg-slate-900/50 rounded-3xl p-6 border border-white/5 space-y-4 text-left">
+                {[
+                  "Unlimited consultations 24/7",
+                  "Advanced Deep Thinking Core",
+                  "Full Multilingual Voice Engine",
+                  "Instant Emergency Geo-Response"
+                ].map((feature, i) => (
+                  <div key={i} className="flex items-center gap-3 text-slate-300 font-bold">
+                    <span className="text-rose-500 font-black">✓</span>
+                    <span className="text-sm">{feature}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-4xl font-black text-white">₹5</span>
+                  <span className="text-slate-500 font-bold uppercase tracking-widest text-xs">/ Month</span>
+                </div>
+                <button 
+                  onClick={handleSubscribeClick}
+                  className="w-full py-5 rounded-3xl btn-vibrant text-white font-black text-lg tracking-tighter !from-rose-600 !to-rose-800 hover:scale-105 transition-all shadow-2xl"
+                >
+                  Subscribe Now
+                </button>
+                <button 
+                  onClick={closeSubscription}
+                  className="w-full py-3 text-slate-500 font-bold uppercase tracking-widest text-[10px] hover:text-white transition-colors"
+                >
+                  Skip for now
+                </button>
+              </div>
+              
+              <p className="text-[9px] text-slate-600 font-medium leading-tight">
+                AI Doctor India Pro provides enhanced neural processing speeds. 
+                Secure payment via Matrix-Gateway.
+              </p>
+            </div>
+          )}
         </div>
       )}
 
